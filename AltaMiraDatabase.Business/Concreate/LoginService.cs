@@ -1,4 +1,5 @@
 ﻿using AltaMiraDatabase.Business.Abstract;
+using AltaMiraDatabase.DataAccess;
 using AltaMiraDatabase.DataAccess.Abstract;
 using AltaMiraDatabase.DataAccess.Concreate;
 using System;
@@ -9,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace AltaMiraDatabase.Business.Concreate
 {
-    public class LoginManager : ILoginService
+    public class LoginService : ILoginService
     {
         private ILoginRepository loginRepository;
-        public LoginManager()
+        public LoginService(UserDbContext userDbContext)
         {
-            loginRepository = new LoginRepository();
+            loginRepository = new LoginRepository(userDbContext);
         }
         public async Task<int> Login(string userName, string pass)
         {

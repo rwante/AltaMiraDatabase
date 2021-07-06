@@ -1,5 +1,6 @@
 ﻿using AltaMiraDatabase.Business.Abstract;
 using AltaMiraDatabase.Business.Concreate;
+using AltaMiraDatabase.DataAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,9 +17,9 @@ namespace AltaMiraDatabase.API.Controllers
     {
         private ILoginService loginService;
 
-        public LoginController()
+        public LoginController(UserDbContext userDbContext)
         {
-            loginService = new LoginManager();
+            loginService = new LoginService(userDbContext);
         }
         [HttpGet("login")]
         public async Task<string> Login(string userName, string pass)

@@ -11,56 +11,47 @@ namespace AltaMiraDatabase.DataAccess.Concreate
 {
     public class UserRepository : IUserRepository
     {
+        public UserDbContext userDbContext;
+        
+        public UserRepository(UserDbContext _userDbContext)
+        {
+            userDbContext = _userDbContext;
+        }
         public async Task<User> CreateUser(User user)
         {
-            using (var userDbContext = new UserDbContext())
-            {
-                user.Pass = RandomString(8,true);
-                userDbContext.Users.Add(user);
-                await userDbContext.SaveChangesAsync();
-                return user;
-            }
-        }
+            user.Pass = RandomString(8,true);
+            userDbContext.Users.Add(user);
+            await userDbContext.SaveChangesAsync();
+            return user;
+    }
 
         public async Task DeleteUser(int id)
         {
-            using (var userDbContext = new UserDbContext())
-            {
-                var deletedUser = await GetUserById(id);
-                userDbContext.Users.Remove(deletedUser);
-                await userDbContext.SaveChangesAsync();
-            }
+            var deletedUser = await GetUserById(id);
+            userDbContext.Users.Remove(deletedUser);
+            await userDbContext.SaveChangesAsync();
         }
 
         public async Task<List<User>> GetAllUsers()
         {
-            using(var userDbContext = new UserDbContext())
+            var list = await userDbContext.Users.Include(x => x.Address.Geo).Include(y => y.Company).ToListAsync();
+            foreach(var i in list)
             {
-                var list = await userDbContext.Users.Include(x => x.Address.Geo).Include(y => y.Company).ToListAsync();
-                foreach(var i in list)
-                {
-                    i.Pass = null;
-                }
-                return list;
+                i.Pass = null;
             }
+            return list;
         }
 
         public async Task<User> GetUserById(int id)
         {
-            using (var userDbContext = new UserDbContext())
-            {
-                return await userDbContext.Users.Where(x => x.Id == id).Include(x => x.Address.Geo).Include(y => y.Company).FirstOrDefaultAsync();
-            }
+            return await userDbContext.Users.Where(x => x.Id == id).Include(x => x.Address.Geo).Include(y => y.Company).FirstOrDefaultAsync();
         }
 
         public async Task<User> UpdateUser(User user)
         {
-            using (var userDbContext = new UserDbContext())
-            {
-                userDbContext.Users.Update(user);
-                await userDbContext.SaveChangesAsync();
-                return user;
-            }
+            userDbContext.Users.Update(user);
+            await userDbContext.SaveChangesAsync();
+            return user;
         }
 
         public string RandomString(int size, bool lowerCase)

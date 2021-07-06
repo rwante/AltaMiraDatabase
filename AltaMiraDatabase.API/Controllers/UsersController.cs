@@ -1,5 +1,6 @@
 ﻿using AltaMiraDatabase.Business.Abstract;
 using AltaMiraDatabase.Business.Concreate;
+using AltaMiraDatabase.DataAccess;
 using AltaMiraDatabase.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,18 +20,11 @@ namespace AltaMiraDatabase.API.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService userService;
-        private readonly IDistributedCache _distributedCache;
 
-        /*
-        public UsersController()
-        {
-            userService = new UserManager();
-        }*/
 
-        public UsersController(IDistributedCache distributedCache)
+        public UsersController(IDistributedCache distributedCache, UserDbContext userDbContext)
         {
-            userService = new UserManager();
-            _distributedCache = distributedCache;
+            userService = new UserService(distributedCache,userDbContext);
         }
 
         [HttpGet]
@@ -42,48 +36,25 @@ namespace AltaMiraDatabase.API.Controllers
         [HttpGet("{id}")]
         public async Task<User> Get(int id)
         {
-            string cacheKey = id.ToString();
-            var usersFromCache = await _distributedCache.GetStringAsync(cacheKey);
-            if(usersFromCache == null)
-            {
-                var usersFromDb = await userService.GetUserById(id);
-                var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromDays(1))
-                        .SetAbsoluteExpiration(DateTime.Now.AddMonths(1));
-                var json_str = JsonConvert.SerializeObject(usersFromDb);
-                await _distributedCache.SetStringAsync(cacheKey, json_str, options);
-                return usersFromDb;
-            }
-            var cache_json = JsonConvert.DeserializeObject<User>(usersFromCache);
-            return cache_json;
+            return await userService.GetUserById(id);
             
         }
 
         [HttpPost]
         public async Task<User> Post([FromBody]User user)
         {
-            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromDays(1))
-                        .SetAbsoluteExpiration(DateTime.Now.AddMonths(1));
-            var json_str = JsonConvert.SerializeObject(user);
-            string cacheKey = user.Id.ToString();
-            await _distributedCache.SetStringAsync(cacheKey, json_str, options);
             return await userService.CreateUser(user);
         }
 
         [HttpPut]
         public async Task<User> Put([FromBody] User user)
         {
-            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromDays(1))
-                        .SetAbsoluteExpiration(DateTime.Now.AddMonths(1));
-            var json_str = JsonConvert.SerializeObject(user);
-            string cacheKey = user.Id.ToString();
-            await _distributedCache.SetStringAsync(cacheKey, json_str, options);
             return await userService.UpdateUser(user);
         }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
-            await _distributedCache.RemoveAsync(id.ToString());
             await userService.DeleteUser(id);
         }
 

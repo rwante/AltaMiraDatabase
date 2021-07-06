@@ -10,19 +10,22 @@ namespace AltaMiraDatabase.DataAccess.Concreate
 {
     public class LoginRepository : ILoginRepository
     {
+        public UserDbContext userDbContext;
 
+        public LoginRepository(UserDbContext _userDbContext)
+        {
+            userDbContext = _userDbContext;
+        }
+        
         public async Task<int> Login(string userName, string pass)
         {
-            using(var userDbContext = new UserDbContext())
+            var info = await userDbContext.Users.FirstOrDefaultAsync(
+                x => x.Username == userName && x.Pass == pass);
+            if(info != null)
             {
-                var info = await userDbContext.Users.FirstOrDefaultAsync(
-                    x => x.Username == userName && x.Pass == pass);
-                if(info != null)
-                {
-                    return 1;
-                }
-                return 0;
+                return 1;
             }
+            return 0;
         }
     }
 }

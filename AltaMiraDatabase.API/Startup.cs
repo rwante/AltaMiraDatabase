@@ -12,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AltaMiraDatabase.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace AltaMiraDatabase.API
 {
@@ -29,6 +31,8 @@ namespace AltaMiraDatabase.API
         {
 
             services.AddControllers();
+            services.AddDbContext<UserDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AltaMiraDatabase.API", Version = "v1" });
@@ -37,7 +41,7 @@ namespace AltaMiraDatabase.API
                 .AddCookie(x => x.LoginPath = "/swagger/index.html");
             services.AddStackExchangeRedisCache(action =>
             {
-                action.Configuration = "localhost:6379";
+                action.Configuration = Configuration.GetConnectionString("Redis");
             });
         }
 
