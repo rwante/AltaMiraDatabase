@@ -23,7 +23,7 @@ namespace AltaMiraDatabase.DataAccess.Concreate
             userDbContext.Users.Add(user);
             await userDbContext.SaveChangesAsync();
             return user;
-    }
+        }
 
         public async Task DeleteUser(int id)
         {

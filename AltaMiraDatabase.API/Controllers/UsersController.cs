@@ -22,9 +22,9 @@ namespace AltaMiraDatabase.API.Controllers
         private IUserService userService;
 
 
-        public UsersController(IDistributedCache distributedCache, UserDbContext userDbContext)
+        public UsersController(IUserService _userService)
         {
-            userService = new UserService(distributedCache,userDbContext);
+            userService = _userService;
         }
 
         [HttpGet]

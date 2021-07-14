@@ -17,9 +17,9 @@ namespace AltaMiraDatabase.Business.Concreate
     {
         private IUserRepository userRepository;
         private readonly IDistributedCache _distributedCache;
-        public UserService(IDistributedCache distributedCache, UserDbContext userDbContext)
+        public UserService(IDistributedCache distributedCache, IUserRepository _userRepository)
         {
-            userRepository = new UserRepository(userDbContext);
+            userRepository = _userRepository;
             _distributedCache = distributedCache;
         }
         public async Task<User> CreateUser(User user)

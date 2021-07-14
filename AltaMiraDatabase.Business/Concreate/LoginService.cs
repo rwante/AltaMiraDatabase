@@ -13,9 +13,9 @@ namespace AltaMiraDatabase.Business.Concreate
     public class LoginService : ILoginService
     {
         private ILoginRepository loginRepository;
-        public LoginService(UserDbContext userDbContext)
+        public LoginService(ILoginRepository _loginRepository)
         {
-            loginRepository = new LoginRepository(userDbContext);
+            loginRepository = _loginRepository;
         }
         public async Task<int> Login(string userName, string pass)
         {

@@ -17,9 +17,9 @@ namespace AltaMiraDatabase.API.Controllers
     {
         private ILoginService loginService;
 
-        public LoginController(UserDbContext userDbContext)
+        public LoginController(ILoginService _loginService)
         {
-            loginService = new LoginService(userDbContext);
+            loginService = _loginService;
         }
         [HttpGet("login")]
         public async Task<string> Login(string userName, string pass)

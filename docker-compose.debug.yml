@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    container_name: mssql
+    restart: on-failure
+    environment:
+      - SA_PASSWORD=pasS123
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+  api:
+    image: altamiradatabase_api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=altamira123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=C:Users\user\https\aspnetapp.pfx
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - mssql
+      - redis
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    command: ["./wait-for-it.sh", "--timeout=0", "mssql:1433", "--", "dotnet", "aspnet-core-docker-workshop.dll"]
