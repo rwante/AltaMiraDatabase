@@ -12,8 +12,9 @@ namespace AltaMiraDatabase.DataAccess
     {
         public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
         {
-
+            
         }
+
 
         public DbSet<User> Users { get; set; }
     }

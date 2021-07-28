@@ -57,8 +57,9 @@ namespace AltaMiraDatabase.API
             {
                 action.Configuration = Configuration.GetConnectionString("Redis");
             });
-            services.AddScoped<IElasticConnection, ElasticConnection>();
-            services.AddScoped<IElasticClient, ElasticClient>();
+            //services.AddScoped<IElasticConnection, ElasticConnection>();
+            //services.AddScoped<IElasticClient, ElasticClient>();
+            services.GetConnectionSettings(Configuration);
             services.AddScoped<ILoggerRepository, LoggerRepository>();
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<ILoginService, LoginService>();
@@ -79,8 +80,8 @@ namespace AltaMiraDatabase.API
             }
 
             //app.UseHttpsRedirection();
-
-            var logger = NLogBuilder.ConfigureNLog("Nlog.config").GetCurrentClassLogger();
+            
+            var logger = NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
 
             app.UseExceptionHandler(opt =>
             {

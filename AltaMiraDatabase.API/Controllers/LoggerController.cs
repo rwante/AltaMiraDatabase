@@ -1,6 +1,8 @@
 ﻿using AltaMiraDatabase.Business.Abstract;
 using AltaMiraDatabase.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,7 @@ namespace AltaMiraDatabase.API.Controllers
     public class LoggerController : Controller
     {
         public ILoggerService loggerService;
-        public LoggerController(ILoggerService _loggerService)
+        public LoggerController(ILoggerService _loggerService, ILogger<IStartup> _ilog)
         {
             loggerService = _loggerService;
         }
@@ -22,6 +24,18 @@ namespace AltaMiraDatabase.API.Controllers
         public List<Log> Get(int id)
         {
             return loggerService.Execute<Log>(id);
+        }
+
+        [HttpGet("Error")]
+        public List<Log> GetError()
+        {
+            return loggerService.Execute<Log>(-1);
+        }
+
+        [HttpGet("Info")]
+        public List<Log> GetInfo()
+        {
+            return loggerService.Execute<Log>(1);
         }
     }
 }

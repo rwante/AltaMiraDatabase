@@ -1,6 +1,7 @@
 ﻿using AltaMiraDatabase.Business.Abstract;
 using AltaMiraDatabase.Business.Concreate;
 using AltaMiraDatabase.DataAccess;
+using AltaMiraDatabase.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,15 +22,15 @@ namespace AltaMiraDatabase.API.Controllers
         {
             loginService = _loginService;
         }
-        [HttpGet("login")]
-        public async Task<string> Login(string userName, string pass)
+        [HttpPost("login")]
+        public async Task<string> Login([FromBody]Login login)
         {
-            int value = await loginService.Login(userName, pass);
+            int value = await loginService.Login(login.Username, login.Pass);
             if(value == 1)
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name,userName)
+                    new Claim(ClaimTypes.Name,login.Username)
                 };
                 var userIdentity = new ClaimsIdentity(claims, "Users");
                 ClaimsPrincipal principal = new ClaimsPrincipal(userIdentity);
